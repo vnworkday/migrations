@@ -1,4 +1,4 @@
-# Getting Started
+# VNWorkday - Migrations
 
 This project contains all migration scripts of database schemas. The database schema is managed
 by [Flyway](https://flywaydb.org/), a database migration tool that brings structure and confidence to the database
@@ -9,14 +9,60 @@ schema.
 The project structure is as follows:
 
 ```plaintext
-|-- migrations/          # Contains all migration scripts
-|   |-- account/         # Contains migration scripts for the `account` database
-|   |   |-- VyyyyMMddHHmmss__description.sql # Migration script, where `yyyyMMddHHmmss` is the timestamp and `description` is the brief summary of the migration
-|-- docs/                # Contains all documentation related to the database schema
-|   |-- account.md       # Documentation for the `account` database schema
-|-- db/
-|   |-- V1__create_database_$service.sql # Initializing script to create database for $service
-|-- configs/             # Contains all configurations for Flyway
-|   |-- flyway.toml      # Flyway configuration file
+|-- migrations/                                  
+|   |-- <dbname>/                               
+|   |   |-- sql/                                 # Contains migration scripts for the `<dbname>` database
+|   |   |   |-- VyyyyMMddHHmmss__description.sql # Migration script for the `<dbname>` database
+|   |   |-- ci/                                  # Contains scripts for CI/CD
+|   |   |   |-- setup.sh                         # Script to setup the database for CI/CD
+|-- docs/                                        # Contains all documentation related to the database schema
+|   |-- <dbname>.md                              # Documentation for the `<dbname>` database schema
+|__ ci/
+|   |-- start.sh                                 # Script to start the local development environment
+|   |-- stop.sh                                  # Script to stop the local development environment
+|   |-- <other scripts>                          # Other scripts for CI/CD
+|-- README.md                                    # You should read this file first. It contains all the information you need to get started.
 ```
 
+## Local Development
+
+1. Run the `ci/start.sh` to prepare your local environment. It typically starts a Flyway container and a PostgreSQL
+   Server container.
+2. Verify that the PostgreSQL Server & Flyway are running by executing the following command:
+
+   ```shell
+   docker ps
+   ```
+
+   The output should be similar to the following:
+
+   ```plaintext
+   CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS                  PORTS                    NAMES
+   1b3b4b3b4b3b   postgres:13.3-alpine  postgres -c confi...     2 minutes ago   Up 2 minutes (healthy)  0.0.0.0:5432->5432/tcp   postgres
+   2b3b4b3b4b3b   ci-flyway:latest                               2 minutes ago   Up 2 minutes                                     flyway
+   ```
+3. Make sure you can connect to the PostgreSQL Server by executing the following command:
+
+   ```shell
+   psql -U postgres -h 0.0.0.0
+   ```
+
+   The output should prompt you input as the following:
+
+   ```plaintext
+   Password for user postgres:
+   ```
+4. Make sure you can connect to the Flyway container by executing the following command:
+
+   ```shell
+   docker exec flyway flyway version
+   ```
+
+   The output should be similar to the following:
+
+   ```plaintext
+   Flyway Community Edition 10.14.0 by Redgate
+   
+   << other output >>
+   ```
+5. When you are done with your local development, run the `ci/stop.sh` to stop the local environment.
