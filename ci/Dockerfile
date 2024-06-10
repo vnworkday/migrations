@@ -21,9 +21,9 @@ RUN apt-get autoremove -y \
 
 FROM scratch
 
-LABEL maintainer="Duy Nguyen" \
-    version="1.0" \
-    description="Postgres Flyway Migration Container for CI/CD pipeline" \
+LABEL com.vnworkday.docker.maintainer="Duy Nguyen" \
+    com.vnworkday.docker.version="1.0" \
+    com.vnworkday.docker.description="Postgres Flyway Migration Container for CI/CD pipeline" \
     com.vnworkday.docker.name="flyway"
 
 COPY --from=build / /

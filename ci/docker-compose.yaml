@@ -1,0 +1,61 @@
+configs:
+  migrations:
+    file: ../
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16.3-alpine3.20
+    pull_policy: missing
+    labels:
+      com.vnworkday.docker.name: postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${SA_PASSWORD:-postgres}
+    volumes:
+      - type: bind
+        source: ./conf/pg_hba.conf
+        target: /var/lib/postgresql/data/pg_hba.conf
+      - type: bind
+        source: ./conf/postgresql.conf
+        target: /var/config/postgresql.conf
+      - type: volume
+        source: postgres-volume
+        target: /var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/var/config/postgresql.conf"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 15s
+      timeout: 10s
+      start_period: 10s
+  flyway:
+    container_name: flyway
+    build:
+      context: ../
+      dockerfile: ci/Dockerfile
+    pull_policy: missing
+    labels:
+      com.vnworkday.docker.name: flyway
+    restart: always
+    configs:
+      - migrations
+    entrypoint: /bin/bash
+    stdin_open: true
+    stop_signal: SIGKILL
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD:-postgres}
+networks:
+  default:
+    name: vnworkday
+    external: true
+volumes:
+  postgres-volume:
+    external: true
