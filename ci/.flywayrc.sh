@@ -30,7 +30,7 @@ get_container_id() {
 ## Usage: get_sa_password
 get_sa_password() {
   echo "🔑 Getting SA password..."
-  if [[ "${SA_PASSWORD}" == "" ]]; then
+  if [[ "${SA_PASSWORD:-}" == "" ]]; then
     if [[ -e "${sa_password_file}" ]]; then
       SA_PASSWORD=$(cat "${sa_password_file}")
       export SA_PASSWORD

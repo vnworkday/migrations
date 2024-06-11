@@ -16,3 +16,4 @@ fabric.properties
 !.vscode/*.code-snippets
 .history/
 *.vsix
+tmp/

@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y curl
 #    && ln -s /usr/lib/postgresql/16/bin/* /usr/local/bin
 
 # Install Flyway
-RUN curl -s https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${flyway_version}/flyway-commandline-${flyway_version}-linux-x64.tar.gz | tar xvz -C /opt \
+RUN curl -s https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${flyway_version}/flyway-commandline-${flyway_version}-linux-x64.tar.gz | tar xz -C /opt \
     && ln -s /opt/flyway-${flyway_version}/flyway /usr/local/bin \
     && ln -s /opt/flyway-${flyway_version}/flyway /opt/flyway
 
