@@ -1,15 +1,8 @@
-set -e
+#!/usr/bin/env bash
 
-## Formatting variables
-## Usage: echo "${bold}Bold text${normal}"
-bold=$(tput bold 2>/dev/null || echo "")
-reset=$(tput sgr0 2>/dev/null || echo "")
+set -euo pipefail
 
-project="${PROJECT_NAME:vnworkday}"
-db_names=(
-  "account"
-  "workforce"
-)
+project="${PROJECT_NAME:-vnworkday}"
   
 sa_password_file="${HOME}/.pgsql/sa_password"
 
@@ -17,7 +10,7 @@ sa_password_file="${HOME}/.pgsql/sa_password"
 ## Usage: get_container_id
 get_container_id() {
   echo "🐳 Getting Flyway container ID..."
-  CONTAINER_ID=$(podman ps --filter "label=com.vnworkday.docker.name=flyway" --filter "label=com.vnworkday.project=${PROJECT_NAME}" -q)
+  CONTAINER_ID=$(podman ps --filter "label=com.vnworkday.docker.name=flyway" -q)
   if [ -z "$CONTAINER_ID" ]; then
       echo "⚠️ Flyway container not found. Please run the Flyway container first."
       exit 1
@@ -29,7 +22,6 @@ get_container_id() {
 ## Get SA password from the secrets directory if not provided as an environment variable.
 ## Usage: get_sa_password
 get_sa_password() {
-  echo "🔑 Getting SA password..."
   if [[ "${SA_PASSWORD:-}" == "" ]]; then
     if [[ -e "${sa_password_file}" ]]; then
       SA_PASSWORD=$(cat "${sa_password_file}")
@@ -79,7 +71,7 @@ exec_sql_cmd() {
   fi
   get_container_id
   get_sa_password
-  podman exec "${CONTAINER_ID}" psql --username=postgres --dbname="${project}" --command="${sql_cmd}"
+  podman exec "${CONTAINER_ID}" psql --username=postgres --command="${sql_cmd}"
 }
 
 ## Run SQL file in the Flyway container
@@ -93,8 +85,7 @@ exec_sql_file() {
   fi
   get_container_id
   get_sa_password
-  podman cp ./ci/"${sql_file}".sql "${CONTAINER_ID}:/tmp/${sql_file}.sql"
-  podman exec "${CONTAINER_ID}" psql --username=postgres --dbname="${project}" "$@" --file="/tmp/${sql_file}.sql"
+  podman exec "${CONTAINER_ID}" psql --username=postgres "$@" --file="${sql_file}.sql"
 }
 
 ## Run Flyway command in the Flyway container

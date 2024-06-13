@@ -20,6 +20,7 @@ The project structure is as follows:
 |__ ci/
 |   |-- start.sh                                 # Script to start the local development environment
 |   |-- stop.sh                                  # Script to stop the local development environment
+|   |-- setup.sh                                 # Script to setup the database for CI/CD
 |   |-- <other scripts>                          # Other scripts for CI/CD
 |-- README.md                                    # You should read this file first. It contains all the information you need to get started.
 ```

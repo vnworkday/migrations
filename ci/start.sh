@@ -18,6 +18,7 @@ init_sa_password() {
       echo "🔑 Generating a new SA password..."
       SA_PASSWORD="VnW0rKd4y!$(openssl rand -base64 15 | tr -cd '[:alnum:]\n')"
     fi
+    echo "🔐 SA password: ${SA_PASSWORD}"
     export SA_PASSWORD
   fi
 }
