@@ -71,7 +71,7 @@ exec_sql_cmd() {
   fi
   get_container_id
   get_sa_password
-  podman exec "${CONTAINER_ID}" psql --username=postgres --command="${sql_cmd}"
+  podman exec "${CONTAINER_ID}" psql --username=postgres --host=postgres --command="${sql_cmd}"
 }
 
 ## Run SQL file in the Flyway container
@@ -83,9 +83,10 @@ exec_sql_file() {
     echo "⚠️ Please provide an SQL file."
     exit 1
   fi
+  shift
   get_container_id
   get_sa_password
-  podman exec "${CONTAINER_ID}" psql --username=postgres "$@" --file="${sql_file}.sql"
+  podman exec --workdir /migrations "${CONTAINER_ID}" psql --username=postgres --host=postgres "$@" --file="${sql_file}"
 }
 
 ## Run Flyway command in the Flyway container

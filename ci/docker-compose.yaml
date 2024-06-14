@@ -22,7 +22,7 @@ services:
         target: /var/lib/postgresql/data
       - type: bind
         source: ./conf/pg_hba.conf
-        target: /var/lib/postgresql/data/pg_hba.conf
+        target: /var/lib/postgresql/data/pgdata/pg_hba.conf
       - type: bind
         source: ./conf/postgresql.conf
         target: /var/config/postgresql.conf
@@ -32,10 +32,10 @@ services:
       - "config_file=/var/config/postgresql.conf"
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres" ]
-      interval: 15s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       start_period: 10s
-      retries: 5
+      retries: 3
   flyway:
     container_name: flyway
     build:
@@ -54,8 +54,51 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-h", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:8.8
+    pull_policy: missing
+    labels:
+      com.vnworkday.docker.name: pgadmin
+      com.vnworkday.docker.project: vnworkday
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-dba@vnworkday.com}
+      PGADMIN_DEFAULT_PASSWORD: ${SA_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-O", "-", "http://localhost:80/misc/ping" ]
+      interval: 5s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+  wait:
+    container_name: wait
+    image: dokku/wait:latest
+    pull_policy: missing
+    labels:
+      com.vnworkday.docker.name: wait
+      com.vnworkday.docker.project: vnworkday
+    restart: no
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_healthy
+      pgadmin:
+        condition: service_healthy
 networks:
   default:
     name: vnworkday
