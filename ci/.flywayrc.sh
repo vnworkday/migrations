@@ -10,7 +10,7 @@ sa_password_file="${HOME}/.pgsql/sa_password"
 ## Usage: get_container_id
 get_container_id() {
   echo "🐳 Getting Flyway container ID..."
-  CONTAINER_ID=$(podman ps --filter "label=com.vnworkday.docker.name=flyway" -q)
+  CONTAINER_ID=$(docker ps --filter "label=com.vnworkday.docker.name=flyway" -q)
   if [ -z "$CONTAINER_ID" ]; then
       echo "⚠️ Flyway container not found. Please run the Flyway container first."
       exit 1
@@ -38,7 +38,7 @@ get_sa_password() {
 build_container() {
   echo "🐳 Building Flyway container..."
   get_sa_password
-  podman compose --file ./ci/docker-compose.yaml --project-name "${project}" build
+  docker compose --file ./ci/docker-compose.yaml --project-name "${project}" build
   echo "🐳 Flyway container built successfully."
 }
 
@@ -47,7 +47,7 @@ build_container() {
 start_container() {
   echo "🐳 Starting Flyway container..."
   get_sa_password
-  podman compose --file ./ci/docker-compose.yaml --project-name "${project}" up --detach --quiet-pull
+  docker compose --file ./ci/docker-compose.yaml --project-name "${project}" up --detach --quiet-pull
   echo "🐳 Flyway container started successfully."
 }
 
@@ -56,7 +56,7 @@ start_container() {
 stop_container() {
   echo "🐳 Stopping Flyway container..."
   get_sa_password
-  podman compose --file ./ci/docker-compose.yaml --project-name "${project}" down
+  docker compose --file ./ci/docker-compose.yaml --project-name "${project}" down
   echo "🐳 Flyway container stopped successfully."
 }
 
@@ -71,7 +71,7 @@ exec_sql_cmd() {
   fi
   get_container_id
   get_sa_password
-  podman exec "${CONTAINER_ID}" psql --username=postgres --host=postgres --command="${sql_cmd}"
+  docker exec "${CONTAINER_ID}" psql --username=postgres --host=postgres --command="${sql_cmd}"
 }
 
 ## Run SQL file in the Flyway container
@@ -86,7 +86,7 @@ exec_sql_file() {
   shift
   get_container_id
   get_sa_password
-  podman exec --workdir /migrations "${CONTAINER_ID}" psql --username=postgres --host=postgres "$@" --file="${sql_file}"
+  docker exec --workdir /migrations "${CONTAINER_ID}" psql --username=postgres --host=postgres "$@" --file="${sql_file}"
 }
 
 ## Run Flyway command in the Flyway container
@@ -95,7 +95,7 @@ exec_sql_file() {
 run_flyway() {
   echo "🐳 Running Flyway command: flyway" "$@"
   get_container_id
-  podman exec --env DATABASE="${DATABASE}" --workdir /migrations "${CONTAINER_ID}" flyway "$@"
+  docker exec --env DATABASE="${DATABASE}" --workdir /migrations "${CONTAINER_ID}" flyway "$@"
   echo "🐳 Flyway ran successfully."
 }
 

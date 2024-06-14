@@ -18,7 +18,7 @@ setup_database() {
   schema="${dbname}app"
   username="sa_${dbname}"
   echo "🚀 Setting up the database for ${dbname}..."
-  exec_sql_file "migrations/${dbname}/ci/setup.sql" -v username="${username}" -v password="${SA_PASSWORD}" -v dbname="${dbname}" -v schema="${schema}"
+  exec_sql_file "ci/setup.sql" -v username="${username}" -v password="${SA_PASSWORD}" -v dbname="${dbname}" -v schema="${schema}"
   echo "🚀 Database ${dbname} setup completed."
 }
 
