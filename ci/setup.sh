@@ -16,13 +16,13 @@ setup_database() {
     exit 1
   fi
   schema="${dbname}app"
-  username="sa_${dbname}"
+  username="dba_${dbname}"
   echo "🚀 Setting up the database for ${dbname}..."
-  exec_sql_file "ci/setup.sql" -v username="${username}" -v password="${SA_PASSWORD}" -v dbname="${dbname}" -v schema="${schema}"
+  exec_sql_file "ci/setup.sql" -v username="${username}" -v password="${DBA_PASSWORD}" -v dbname="${dbname}" -v schema="${schema}"
   echo "🚀 Database ${dbname} setup completed."
 }
 
-get_sa_password
+get_dba_password
 
 for db in "${db_names[@]}"; do
   setup_database "${db}"

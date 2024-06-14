@@ -13,16 +13,11 @@ services:
       - "5432:5432"
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${SA_PASSWORD}
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: dba
+      POSTGRES_PASSWORD: ${DBA_PASSWORD}
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - type: bind
-        source: ../tmp/data
-        target: /var/lib/postgresql/data
-      - type: bind
-        source: ./conf/pg_hba.conf
-        target: /var/lib/postgresql/data/pgdata/pg_hba.conf
       - type: bind
         source: ./conf/postgresql.conf
         target: /var/config/postgresql.conf
@@ -31,7 +26,7 @@ services:
       - "-c"
       - "config_file=/var/config/postgresql.conf"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      test: [ "CMD", "pg_isready", "-U", "dba" ]
       interval: 10s
       timeout: 5s
       start_period: 10s
@@ -55,13 +50,13 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres", "-h", "postgres" ]
+      test: [ "CMD", "pg_isready", "-U", "dba", "-h", "postgres" ]
       interval: 10s
       timeout: 5s
       start_period: 10s
       retries: 3
     environment:
-      SA_PASSWORD: ${SA_PASSWORD}
+      DBA_PASSWORD: ${DBA_PASSWORD}
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4:8.8
@@ -74,7 +69,7 @@ services:
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-dba@vnworkday.com}
-      PGADMIN_DEFAULT_PASSWORD: ${SA_PASSWORD}
+      PGADMIN_DEFAULT_PASSWORD: ${DBA_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy

@@ -27,9 +27,14 @@ The project structure is as follows:
 
 ## Local Development
 
-1. Run the `ci/start.sh` to prepare your local environment. It typically starts a Flyway container and a PostgreSQL
+1. Create a new Docker network by executing the following command:
+
+   ```shell
+   docker network create vnworkday
+   ```
+2. Run the `ci/start.sh` to prepare your local environment. It typically starts a Flyway container and a PostgreSQL
    Server container.
-2. Verify that the PostgreSQL Server & Flyway are running by executing the following command:
+3. Verify that the PostgreSQL Server & Flyway are running by executing the following command:
 
    ```shell
    docker ps
@@ -39,13 +44,13 @@ The project structure is as follows:
 
    ```plaintext
    CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS                  PORTS                    NAMES
-   1b3b4b3b4b3b   postgres:13.3-alpine  postgres -c confi...     2 minutes ago   Up 2 minutes (healthy)  0.0.0.0:5432->5432/tcp   postgres
-   2b3b4b3b4b3b   ci-flyway:latest                               2 minutes ago   Up 2 minutes                                     flyway
+   1b3b4b3b4b3b   postgres:16.3-alpine  postgres -c confi...     2 minutes ago   Up 2 minutes (healthy)  0.0.0.0:5432->5432/tcp   postgres
+   2b3b4b3b4b3b   flyway:latest                               2 minutes ago   Up 2 minutes                                     flyway
    ```
-3. Make sure you can connect to the PostgreSQL Server by executing the following command:
+4. Make sure you can connect to the PostgreSQL Server by executing the following command:
 
    ```shell
-   psql -U postgres -h 0.0.0.0
+   psql -U dba -h 0.0.0.0
    ```
 
    The output should prompt you input as the following:
@@ -53,7 +58,7 @@ The project structure is as follows:
    ```plaintext
    Password for user postgres:
    ```
-4. Make sure you can connect to the Flyway container by executing the following command:
+5. Make sure you can connect to the Flyway container by executing the following command:
 
    ```shell
    docker exec flyway flyway version
@@ -66,4 +71,4 @@ The project structure is as follows:
    
    << other output >>
    ```
-5. When you are done with your local development, run the `ci/stop.sh` to stop the local environment.
+6. When you are done with your local development, run the `ci/stop.sh` to stop the local environment.

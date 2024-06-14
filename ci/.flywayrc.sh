@@ -4,7 +4,7 @@ set -euo pipefail
 
 project="${PROJECT_NAME:-vnworkday}"
   
-sa_password_file="${HOME}/.pgsql/sa_password"
+dba_password_file="${HOME}/.pgsql/dba_password"
 
 ## Get Flyway container ID
 ## Usage: get_container_id
@@ -20,14 +20,14 @@ get_container_id() {
 }
 
 ## Get SA password from the secrets directory if not provided as an environment variable.
-## Usage: get_sa_password
-get_sa_password() {
-  if [[ "${SA_PASSWORD:-}" == "" ]]; then
-    if [[ -e "${sa_password_file}" ]]; then
-      SA_PASSWORD=$(cat "${sa_password_file}")
-      export SA_PASSWORD
+## Usage: get_dba_password
+get_dba_password() {
+  if [[ "${DBA_PASSWORD:-}" == "" ]]; then
+    if [[ -e "${dba_password_file}" ]]; then
+      DBA_PASSWORD=$(cat "${dba_password_file}")
+      export DBA_PASSWORD
     else
-      echo "⚠️ Could not read SA password from ${sa_password_file}"
+      echo "⚠️ Could not read SA password from ${dba_password_file}"
       exit 1
     fi
   fi
@@ -37,7 +37,7 @@ get_sa_password() {
 ## Usage: build_container
 build_container() {
   echo "🐳 Building Flyway container..."
-  get_sa_password
+  get_dba_password
   docker compose --file ./ci/docker-compose.yaml --project-name "${project}" build
   echo "🐳 Flyway container built successfully."
 }
@@ -46,7 +46,7 @@ build_container() {
 ## Usage: start_container
 start_container() {
   echo "🐳 Starting Flyway container..."
-  get_sa_password
+  get_dba_password
   docker compose --file ./ci/docker-compose.yaml --project-name "${project}" up --detach --quiet-pull
   echo "🐳 Flyway container started successfully."
 }
@@ -55,7 +55,7 @@ start_container() {
 ## Usage: stop_container
 stop_container() {
   echo "🐳 Stopping Flyway container..."
-  get_sa_password
+  get_dba_password
   docker compose --file ./ci/docker-compose.yaml --project-name "${project}" down
   echo "🐳 Flyway container stopped successfully."
 }
@@ -70,8 +70,8 @@ exec_sql_cmd() {
     exit 1
   fi
   get_container_id
-  get_sa_password
-  docker exec "${CONTAINER_ID}" psql --username=postgres --host=postgres --command="${sql_cmd}"
+  get_dba_password
+  docker exec "${CONTAINER_ID}" psql --username=dba --host=postgres --dbname=postgres --command="${sql_cmd}"
 }
 
 ## Run SQL file in the Flyway container
@@ -85,8 +85,8 @@ exec_sql_file() {
   fi
   shift
   get_container_id
-  get_sa_password
-  docker exec --workdir /migrations "${CONTAINER_ID}" psql --username=postgres --host=postgres "$@" --file="${sql_file}"
+  get_dba_password
+  docker exec --workdir /migrations "${CONTAINER_ID}" psql --username=dba --host=postgres --dbname=postgres "$@" --file="${sql_file}"
 }
 
 ## Run Flyway command in the Flyway container
