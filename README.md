@@ -45,18 +45,13 @@ The project structure is as follows:
    ```plaintext
    CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS                  PORTS                    NAMES
    1b3b4b3b4b3b   postgres:16.3-alpine  postgres -c confi...     2 minutes ago   Up 2 minutes (healthy)  0.0.0.0:5432->5432/tcp   postgres
-   2b3b4b3b4b3b   flyway:latest                               2 minutes ago   Up 2 minutes                                     flyway
+   2b3b4b3b4b3b   vnworkday-flyway      /bin/bash                2 minutes ago   Up 2 minutes (healthy)                           flyway
+   3b3b4b3b4b3b   dpage/pgadmin4:8.8    /entrypoint.sh           2 minutes ago   Up 2 minutes (healthy)  0.0.0.0:5050->80/tcp     pgadmin
    ```
 4. Make sure you can connect to the PostgreSQL Server by executing the following command:
 
    ```shell
-   psql -U dba -h 0.0.0.0
-   ```
-
-   The output should prompt you input as the following:
-
-   ```plaintext
-   Password for user postgres:
+   psql -U dba -h 0.0.0.0 -d postgres
    ```
 5. Make sure you can connect to the Flyway container by executing the following command:
 
@@ -71,4 +66,4 @@ The project structure is as follows:
    
    << other output >>
    ```
-6. When you are done with your local development, run the `ci/stop.sh` to stop the local environment.
+6. When you are done with your local development, run the `ci/stop.sh` to stop the local environment and clean up.
