@@ -1,11 +1,35 @@
+create sequence tenant_id_seq as int;
+
 create table tenant
 (
-    id        serial       not null,
+    id        int          not null default nextval('tenant_id_seq'::regclass),
     public_id varchar(16)  not null,
     name      varchar(255) not null,
-    state     int          not null default 1, -- 0: inactive, 1: active
+    state     int          not null default 1, -- 1: active, 2: inactive
     constraint pk_tenant_id primary key (id),
-    constraint uidx_tenant_public_id unique (public_id),
-    constraint uidx_tenant_name unique (name),
-    constraint ck_tenant_state check (state in (0, 1))
+    constraint uid_tenant_public_id unique (public_id),
+    constraint uid_tenant_name unique (name)
 );
+
+insert into tenant (public_id, name, state)
+values ('jUBJX6iCzF7CppVejN20L', 'VN Workday Master', 1);
+
+-- create trigger to prevent delete tenant with public_id = 'jUBJX6iCzF7CppVejN20L'
+create function prevent_delete_tenant()
+    returns trigger
+    language plpgsql
+as
+$$
+begin
+    if
+old.public_id = 'jUBJX6iCzF7CppVejN20L' then
+        raise exception 'Cannot delete master tenant';
+end if;
+return old;
+end;
+
+create trigger prevent_delete_tenant
+    before delete
+    on tenant
+    for each row
+    execute function prevent_delete_tenant();

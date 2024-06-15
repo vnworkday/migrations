@@ -2,6 +2,8 @@ create database :"dbname";
 create role :"username" with password ':"password"' login;
 grant all privileges on database :"dbname" to :"username";
 
+\c :"dbname";
+
 create extension if not exists pgcrypto;
 
 create or replace function get_optimized_bytes_factor(
