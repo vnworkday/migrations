@@ -68,4 +68,26 @@ The project structure is as follows:
    
    << other output >>
    ```
-6. When you are done with your local development, run the `ci/stop.sh` to stop the local environment and clean up.
+6. Run the `ci/setup.sh` to setup the database for development.
+7. Run the `ci/migrate.sh $dbname` (e.g., `./ci/migrate.sh account`) to apply the migration scripts to the database.
+8. Run the `ci/gen.sh` to generate the database migration scripts using the following command:
+
+   ```shell
+   ./ci/gen.sh -d $db_name -n $migration_name
+   ```
+
+   The output should be similar to the following:
+
+   ```plaintext
+   📝 Generating SQL script...
+      - Directory: migrations/account/sql
+      - Database: account
+      - Script: migrations/account/sql/V20240615155837__test.sql
+   ✅ SQL script generated successfully!
+   ```
+
+9. When you are done with your local development, run the `ci/stop.sh` to stop the local environment and clean up.
+
+## Troubleshooting
+
+If you encounter any issues, please refer to the [FAQs](FAQs.md) guide.
