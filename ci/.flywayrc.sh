@@ -6,6 +6,10 @@ project="${PROJECT_NAME:-vnworkday}"
   
 dba_password_file="${HOME}/.pgsql/dba_password"
 
+dbnames=(
+  "account"
+)
+
 ## Get Flyway container ID
 ## Usage: get_container_id
 get_container_id() {
