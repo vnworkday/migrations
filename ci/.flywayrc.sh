@@ -95,7 +95,7 @@ exec_sql_file() {
 run_flyway() {
   echo "🐳 Running Flyway command: flyway" "$@"
   get_container_id
-  docker exec --env DATABASE="${DATABASE}" --workdir /migrations "${CONTAINER_ID}" flyway "$@"
+  docker exec --workdir /migrations "${CONTAINER_ID}" flyway "$@"
   echo "🐳 Flyway ran successfully."
 }
 

@@ -4,6 +4,9 @@ grant all privileges on database :"dbname" to :"username";
 
 \c :"dbname";
 
+create schema :"schema" authorization :"username";
+alter database :"dbname" set search_path to :"schema";
+
 create extension if not exists pgcrypto;
 
 create or replace function get_optimized_bytes_factor(

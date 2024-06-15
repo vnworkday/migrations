@@ -2,9 +2,9 @@ create sequence tenant_id_seq as int;
 
 create table tenant
 (
-    id        int          not null default nextval('tenant_id_seq'::regclass),
-    public_id varchar(16)  not null,
-    name      varchar(255) not null,
+    id        int          not null default nextval('tenant_id_seq'),
+    public_id varchar(32)  not null,
+    name      varchar(256) not null,
     state     int          not null default 1, -- 1: active, 2: inactive
     constraint pk_tenant_id primary key (id),
     constraint uid_tenant_public_id unique (public_id),
@@ -21,12 +21,12 @@ create function prevent_delete_tenant()
 as
 $$
 begin
-    if
-old.public_id = 'jUBJX6iCzF7CppVejN20L' then
+    if old.public_id = 'jUBJX6iCzF7CppVejN20L' then
         raise exception 'Cannot delete master tenant';
-end if;
-return old;
-end;
+    end if;
+    return old;
+end
+$$;
 
 create trigger prevent_delete_tenant
     before delete
