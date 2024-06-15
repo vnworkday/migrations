@@ -13,14 +13,16 @@ The project structure is as follows:
 |   |-- <dbname>/                               
 |   |   |-- sql/                                 # Contains migration scripts for the `<dbname>` database
 |   |   |   |-- VyyyyMMddHHmmss__description.sql # Migration script for the `<dbname>` database
-|   |   |-- ci/                                  # Contains scripts for CI/CD
-|   |   |   |-- setup.sh                         # Script to setup the database for CI/CD
 |-- docs/                                        # Contains all documentation related to the database schema
 |   |-- <dbname>.md                              # Documentation for the `<dbname>` database schema
 |__ ci/
 |   |-- start.sh                                 # Script to start the local development environment
 |   |-- stop.sh                                  # Script to stop the local development environment
 |   |-- setup.sh                                 # Script to setup the database for CI/CD
+|   |-- setup.sql                                # SQL script to setup the database for CI/CD, used by `setup.sh`
+|   |-- Dockerfile                               # Dockerfile for the Flyway container
+|   |-- docker-compose.yaml                      # Docker Compose file for the local development environment
+|   |-- .flywayrc.sh                             # Bash script containing utility functions for setting up local environment
 |   |-- <other scripts>                          # Other scripts for CI/CD
 |-- README.md                                    # You should read this file first. It contains all the information you need to get started.
 ```

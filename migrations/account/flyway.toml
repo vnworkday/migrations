@@ -1,0 +1,8 @@
+[flyway]
+locations = ["filesystem:migrations/account/sql"]
+failOnMissingLocations = true
+
+[environments.local]
+url = "jdbc:postgresql://localhost:5432/account"
+user = "dba_account"
+password = "123456"
