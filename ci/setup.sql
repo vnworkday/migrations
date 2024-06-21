@@ -7,7 +7,9 @@ grant all privileges on database :"dbname" to :"username";
 create schema :"schema" authorization :"username";
 alter database :"dbname" set search_path to :"schema";
 
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema :"schema";
+
+set search_path to :"schema";
 
 create or replace function get_optimized_bytes_factor(
     alp text
