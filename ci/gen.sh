@@ -20,7 +20,15 @@ check_script_name() {
 }
 
 check_dbname() {
-    if [[ ! " ${dbnames[@]} " =~ " ${dbname} " ]]; then
+    found=0
+    for db in "${dbnames[@]}"; do
+        if [[ "$db" == "$dbname" ]]; then
+            found=1
+            break
+        fi
+    done
+
+    if [[ $found -eq 0 ]]; then
         echo "❗️ Invalid database name: ${dbname}. It should be one of the following:"
         for db in "${dbnames[@]}"; do
             echo "  - ${db}"
@@ -60,7 +68,6 @@ utc=$(date -u +"%Y%m%d%H%M%S")
 # If no arguments provided, show usage
 if [ "$#" -eq 0 ]; then
     usage
-    exit 1
 fi
 
 while [ "${1:-}" != "" ]; do
@@ -72,11 +79,10 @@ while [ "${1:-}" != "" ]; do
                                 name=${1:-}
                                 ;;
         -h | --help )           usage
-                                exit
                                 ;;
         * )                     echo "❗️ Invalid argument: $1"
                                 usage
-                                exit 1
+                                ;;
     esac
     shift
 done

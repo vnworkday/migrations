@@ -1,52 +1,23 @@
-name: 'Pull Request'
+name: pull-request
+run-name: Pull Request Lint by ${{ github.actor }}
 on:
+  # Trigger the workflow on pull request to main, staging, and production branches
   pull_request:
     branches:
       - main
-    types: [opened, synchronize]
+    types:
+      - opened
+      - synchronize
+      - reopened
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 jobs:
-  changes:
-    name: 'Check for changes'
+  lint:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.changed.outputs.all_changed_files }}
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: 'Get changed files'
-        id: changed
-        uses: tj-actions/changed-files@v44
-        with:
-          files: |
-            **.sql
-      - name: 'List changed files'
-        if: steps.changed.outputs.any_changed == 'true'
-        env:
-          ADDED_FILES: ${{ steps.changed.outputs.added_files }}
-          ADDED_FILES_COUNT: ${{ steps.changed.outputs.added_files_count }}
-          MODIFIED_FILES: ${{ steps.changed.outputs.modified_files }}
-          MODIFIED_FILES_COUNT: ${{ steps.changed.outputs.modified_files_count }}
-          DELETED_FILES: ${{ steps.changed.outputs.deleted_files }}
-          DELETED_FILES_COUNT: ${{ steps.changed.outputs.deleted_files_count }}
-        run: |
-          if [ -n "$ADDED_FILES" ]; then
-            echo "Added files: $ADDED_FILES_COUNT"
-            for file in $ADDED_FILES; do
-              echo "Added file: $file"
-            done
-          fi
-          if [ -n "$MODIFIED_FILES" ]; then
-            echo "Modified files: $MODIFIED_FILES_COUNT"
-            for file in $MODIFIED_FILES; do
-              echo "Modified file: $file"
-            done
-          fi
-          if [ -n "$DELETED_FILES" ]; then
-            echo "Deleted files: $DELETED_FILES_COUNT"
-            for file in $DELETED_FILES; do
-              echo "Deleted file: $file"
-            done
-          fi
+      # TODO: Do anything make sense
   

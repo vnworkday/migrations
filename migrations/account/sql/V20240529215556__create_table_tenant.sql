@@ -2,34 +2,23 @@ create sequence tenant_id_seq as int;
 
 create table tenant
 (
-    id        int          not null default nextval('tenant_id_seq'),
-    public_id varchar(32)  not null,
-    name      varchar(256) not null,
-    state     int          not null default 1, -- 1: active, 2: inactive
+    id                        int          not null default nextval('tenant_id_seq'),
+    public_id                 varchar(32)  not null,
+    name                      varchar(256) not null,
+    state                     int          not null default 1, -- 1: provisioning, 2: active, 3: inactive
+    domain                    varchar(256) not null,           -- e.g., 'example.vnworkday.vn'
+    timezone                  varchar(64)  not null,           -- e.g., 'America/New_York'
+    production_type           int          not null default 1, -- 1: production, 2: root, 3: internal
+    subscription_type         int          not null default 1, -- 1: basic, 2: standard, 3: premium
+    self_registration_enabled boolean      not null default false,
+    created_at                timestamptz  not null default now(),
+    updated_at                timestamptz  not null default now(),
     constraint pk_tenant_id primary key (id),
     constraint uid_tenant_public_id unique (public_id),
-    constraint uid_tenant_name unique (name)
+    constraint uid_tenant_name unique (name),
+    constraint uid_tenant_domain unique (domain)
 );
 
-insert into tenant (public_id, name, state)
-values ('jUBJX6iCzF7CppVejN20L', 'VN Workday Master', 1);
-
--- create trigger to prevent delete tenant with public_id = 'jUBJX6iCzF7CppVejN20L'
-create function prevent_delete_tenant()
-    returns trigger
-    language plpgsql
-as
-$$
-begin
-    if old.public_id = 'jUBJX6iCzF7CppVejN20L' then
-        raise exception 'Cannot delete master tenant';
-    end if;
-    return old;
-end
-$$;
-
-create trigger prevent_delete_tenant
-    before delete
-    on tenant
-    for each row
-    execute function prevent_delete_tenant();
+insert into tenant (public_id, name, state, domain, timezone, production_type, subscription_type,
+                    self_registration_enabled)
+values (nanoid(), 'VN Workday Master', 2, 'root.vnworkday.vn', 'Asia/Ho_Chi_Minh', 2, 3, false);
