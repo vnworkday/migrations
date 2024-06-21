@@ -16,4 +16,4 @@ if [[ "${dbname}" == "" ]]; then
   exit 1
 fi
 
-run_flyway -configFiles=./migrations/${dbname}/flyway.toml -environment=local repair
+run_flyway -configFiles=./migrations/"${dbname}"/flyway.toml -environment=local repair

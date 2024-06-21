@@ -15,7 +15,6 @@
 
 2. **Checksum mismatch error**
 
-
     - **Symptoms**: When you run `ci/migrate.sh`, you see an error message that says `Checksum mismatch`.
     - **Solution**: Run the `ci/repair.sh` script to repair the Flyway metadata table.
 
