@@ -3,7 +3,7 @@ create sequence tenant_id_seq as int;
 create table tenant
 (
     id                        int          not null default nextval('tenant_id_seq'),
-    public_id                 varchar(32)  not null,
+    public_id                 varchar(32)  not null default nanoid(),
     name                      varchar(256) not null,
     state                     int          not null default 1, -- 1: provisioning, 2: active, 3: inactive
     domain                    varchar(256) not null,           -- e.g., 'example.vnworkday.vn'
@@ -13,11 +13,11 @@ create table tenant
     self_registration_enabled boolean      not null default false,
     created_at                timestamptz  not null default now(),
     updated_at                timestamptz  not null default now(),
-    constraint pk_tenant_id primary key (id),
-    constraint uid_tenant_public_id unique (public_id),
-    constraint uid_tenant_name unique (name),
-    constraint uid_tenant_domain unique (domain)
+    constraint pk_tenant_id primary key (id)
 );
+
+create unique index uid_tenant_public_id on tenant(public_id);
+create unique index uid_tenant_domain on tenant(domain);
 
 insert into tenant (public_id, name, state, domain, timezone, production_type, subscription_type,
                     self_registration_enabled)
